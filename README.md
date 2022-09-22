@@ -12,6 +12,11 @@ This action retrieves aws account id based on account prefix, stage and client. 
 - _aws-secret-key_: AWS secret key for accessing organizations.
 - _aws-role-arn_: AWS role arn for accessing organizations.
 
+Outputs:
+
+- _aws-account-id_: AWS account id.
+- _aws-account-tag_: AWS account tag used for retrieving id.
+
 ### usage
 
 ```yaml
@@ -52,6 +57,7 @@ jobs:
       - name: Preparing deployment parameters
         id: deployment_parameters
         run: |
+          echo "Tag used for retrieving account id: ${{steps.aws_account.outputs.aws-account-tag}}"
           TFVARS="deployment-conf/terraform.tfvars.json"
           sed -i "s#<account_id>#${{steps.aws_account.outputs.aws-account-id}}#g" $TFVARS
 ```

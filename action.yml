@@ -23,7 +23,10 @@ inputs:
 
 outputs:
   aws-account-id:
-    description: "AWS account id retrieved based on input values"
+    description: "AWS account id"
+    value: ${{ steps.retrieve.outputs.id }}
+  aws-account-tag:
+    description: "AWS account tag used for retrieving id"
     value: ${{ steps.retrieve.outputs.id }}
 
 runs:
@@ -55,5 +58,6 @@ runs:
         ACCOUNT_ID=$(jq -r '.[0].ResourceARN' <<< $RESOURCES | sed 's/.*\///')
 
         echo "::set-output name=id::${ACCOUNT_ID}"
+        echo "::set-output name=tag::${AWS_ACCOUNT_TAG}"
 
 
