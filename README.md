@@ -43,9 +43,9 @@ jobs:
         id: aws_account
         name: Get account id
         with:
-          account-prefix: $${{ inputs.account_prefix }}
-          client: $${{ inputs.client }}
-          stage: $${{ inputs.stage }}
+          account-prefix: ${{ inputs.account_prefix }}
+          client: ${{ inputs.client }}
+          stage: ${{ inputs.stage }}
           aws-access-key: $COR_AWS_ACCESS_KEY_ID
           aws-secret-key: $COR_AWS_SECRET_ACCESS_KEY
           aws-role-arn: $AUTOMATION_ROLE_ARN
