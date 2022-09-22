@@ -1,0 +1,59 @@
+name: "get-aws-account-id"
+description: "get-aws-account-id-gh-action"
+inputs:
+  account-prefix:
+    description: "Identification of baseline - usually ohp (ohpen cloud) or dvc (davinci cloud)"
+    required: true
+  client:
+    description: "Name of the client"
+    required: true
+  stage:
+    description: "Stage (dev, tst, acc, prd)"
+    required: true
+
+  aws-access-key:
+    description: "AWS access key for accessing organizations"
+    required: true
+  aws-secret-key:
+    description: "AWS secret key for accessing organizations"
+    required: true
+  aws-role-arn:
+    description: "AWS role arn for accessing organizations"
+    required: true
+
+outputs:
+  aws-account-id:
+    description: "AWS account id retrieved based on input values"
+    value: ${{ steps.retrieve.outputs.id }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up aws credentials
+      shell: bash
+      run: |
+        aws configure set aws_access_key_id ${{ inputs.aws-access-key }}
+        aws configure set aws_secret_access_key ${{ inputs.aws-secret-key }}
+
+        aws configure set role_arn ${{ inputs.aws-role-arn }} --profile organizations
+        aws configure set source_profile default --profile organizations
+    - name: Retrieve aws account id
+      id: retrieve
+      shell: bash
+      run: |
+        AWS_ACCOUNT_TAG="${{ inputs.account-prefix }}-${{ inputs.client }}-${{ inputs.stage }}"
+        RESOURCES=$(aws resourcegroupstaggingapi get-resources --resource-type-filters organizations:account --tag-filters Key=$AWS_ACCOUNT_TAG --profile organizations --region us-east-1)
+        RESOURCES_COUNT=$(jq '.ResourceTagMappingList | length' <<< $RESOURCES)
+        if [ $RESOURCES_COUNT == 0 ]; then
+            echo "No account found with tag ${AWS_ACCOUNT_TAG}"
+            exit -1
+        fi
+        if (( $RESOURCES_COUNT > 1 )); then
+            echo "Multiple accounts tagged with tag ${AWS_ACCOUNT_TAG}. Either verify tag key or contact PST"
+            exit -1
+        fi
+        ACCOUNT_ID=$(jq -r '.[0].ResourceARN' <<< $RESOURCES | sed 's/.*\///')
+
+        echo "::set-output name=id::${ACCOUNT_ID}"
+
+
