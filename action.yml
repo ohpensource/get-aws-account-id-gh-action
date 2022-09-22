@@ -55,6 +55,7 @@ runs:
             echo "Multiple accounts tagged with tag ${AWS_ACCOUNT_TAG}. Either verify tag key or contact PST"
             exit -1
         fi
+        echo "$RESOURCES"
         ACCOUNT_ID=$(jq -r '.[0].ResourceARN' <<< $RESOURCES | sed 's/.*\///')
 
         echo "::set-output name=id::${ACCOUNT_ID}"
