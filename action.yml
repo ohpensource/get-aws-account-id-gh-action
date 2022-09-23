@@ -1,14 +1,8 @@
 name: "get-aws-account-id"
 description: "get-aws-account-id-gh-action"
 inputs:
-  account-prefix:
-    description: "Identification of baseline - usually ohp (ohpen cloud) or dvc (davinci cloud)"
-    required: true
-  client:
-    description: "Name of the client"
-    required: true
-  stage:
-    description: "Stage (dev, tst, acc, prd)"
+  aws-account-tag:
+    description: "AWS account tag used for retrieving id"
     required: true
 
   aws-access-key:
@@ -25,9 +19,6 @@ outputs:
   aws-account-id:
     description: "AWS account id"
     value: ${{ steps.retrieve.outputs.id }}
-  aws-account-tag:
-    description: "AWS account tag used for retrieving id"
-    value: ${{ steps.retrieve.outputs.tag }}
 
 runs:
   using: "composite"
@@ -44,8 +35,7 @@ runs:
       id: retrieve
       shell: bash
       run: |
-        AWS_ACCOUNT_TAG="${{ inputs.account-prefix }}-${{ inputs.client }}-${{ inputs.stage }}"
-        RESOURCES=$(aws resourcegroupstaggingapi get-resources --resource-type-filters organizations:account --tag-filters Key=$AWS_ACCOUNT_TAG --profile organizations --region us-east-1)
+        RESOURCES=$(aws resourcegroupstaggingapi get-resources --resource-type-filters organizations:account --tag-filters Key=${{ inputs.aws-account-tag }} --profile organizations --region us-east-1)
         RESOURCES_COUNT=$(jq '.ResourceTagMappingList | length' <<< $RESOURCES)
         if [ $RESOURCES_COUNT == 0 ]; then
             echo "No account found with tag ${AWS_ACCOUNT_TAG}"
