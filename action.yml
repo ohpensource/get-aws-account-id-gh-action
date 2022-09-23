@@ -27,7 +27,7 @@ outputs:
     value: ${{ steps.retrieve.outputs.id }}
   aws-account-tag:
     description: "AWS account tag used for retrieving id"
-    value: ${{ steps.retrieve.outputs.id }}
+    value: ${{ steps.retrieve.outputs.tag }}
 
 runs:
   using: "composite"
