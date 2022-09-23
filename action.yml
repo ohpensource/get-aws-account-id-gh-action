@@ -35,11 +35,11 @@ runs:
     - name: Set up aws credentials
       shell: bash
       run: |
-        aws configure set aws_access_key_id ${{ inputs.aws-access-key }}
-        aws configure set aws_secret_access_key ${{ inputs.aws-secret-key }}
+        aws configure set aws_access_key_id ${{ inputs.aws-access-key }} --profile organizations-base
+        aws configure set aws_secret_access_key ${{ inputs.aws-secret-key }} --profile organizations-base
 
         aws configure set role_arn ${{ inputs.aws-role-arn }} --profile organizations
-        aws configure set source_profile default --profile organizations
+        aws configure set source_profile organizations-base --profile organizations
     - name: Retrieve aws account id
       id: retrieve
       shell: bash
