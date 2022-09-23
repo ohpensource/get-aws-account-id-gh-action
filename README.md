@@ -54,7 +54,6 @@ jobs:
       - name: Preparing deployment parameters
         id: deployment_parameters
         run: |
-          echo "Tag used for retrieving account id: ${{steps.aws_account.outputs.aws-account-tag}}"
           TFVARS="deployment-conf/terraform.tfvars.json"
           sed -i "s#<account_id>#${{steps.aws_account.outputs.aws-account-id}}#g" $TFVARS
 ```
