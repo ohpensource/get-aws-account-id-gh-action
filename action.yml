@@ -1,0 +1,52 @@
+name: "get-aws-account-id"
+description: "get-aws-account-id-gh-action"
+inputs:
+  aws-account-tag:
+    description: "AWS account tag used for retrieving id"
+    required: true
+
+  aws-access-key:
+    description: "AWS access key for accessing organizations"
+    required: true
+  aws-secret-key:
+    description: "AWS secret key for accessing organizations"
+    required: true
+  aws-role-arn:
+    description: "AWS role arn for accessing organizations"
+    required: true
+
+outputs:
+  aws-account-id:
+    description: "AWS account id"
+    value: ${{ steps.retrieve.outputs.id }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up aws credentials
+      shell: bash
+      run: |
+        aws configure set aws_access_key_id ${{ inputs.aws-access-key }} --profile organizations-base
+        aws configure set aws_secret_access_key ${{ inputs.aws-secret-key }} --profile organizations-base
+
+        aws configure set role_arn ${{ inputs.aws-role-arn }} --profile organizations
+        aws configure set source_profile organizations-base --profile organizations
+    - name: Retrieve aws account id
+      id: retrieve
+      shell: bash
+      run: |
+        RESOURCES=$(aws resourcegroupstaggingapi get-resources --resource-type-filters organizations:account --tag-filters Key=${{ inputs.aws-account-tag }} --profile organizations --region us-east-1)
+        RESOURCES_COUNT=$(jq '.ResourceTagMappingList | length' <<< $RESOURCES)
+        if [ $RESOURCES_COUNT == 0 ]; then
+            echo "No account found with tag ${{ inputs.aws-account-tag }}"
+            exit -1
+        fi
+        if (( $RESOURCES_COUNT > 1 )); then
+            echo "Multiple accounts tagged with tag ${{ inputs.aws-account-tag }}. Either verify tag key or contact PST"
+            exit -1
+        fi
+        ACCOUNT_ID=$(jq -r '.ResourceTagMappingList[0].ResourceARN' <<< $RESOURCES | sed 's/.*\///')
+
+        echo "::set-output name=id::${ACCOUNT_ID}"
+
+
