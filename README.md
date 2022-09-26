@@ -44,10 +44,8 @@ jobs:
       - uses: ohpensource/get-aws-account-id-gh-action@0.0.0.1
         id: aws_account
         name: Get account id
-        env:
-          AWS_ACCOUNT_TAG: "${{ inputs.account_prefix }}-${{ inputs.client }}-${{ inputs.stage }}"
         with:
-          aws-account-tag: ${{ env.AWS_ACCOUNT_TAG }}
+          aws-account-tag: "${{ inputs.account_prefix }}-${{ inputs.client }}-${{ inputs.stage }}"
           aws-access-key: $COR_AWS_ACCESS_KEY_ID
           aws-secret-key: $COR_AWS_SECRET_ACCESS_KEY
           aws-role-arn: $AUTOMATION_ROLE_ARN

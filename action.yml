@@ -38,11 +38,11 @@ runs:
         RESOURCES=$(aws resourcegroupstaggingapi get-resources --resource-type-filters organizations:account --tag-filters Key=${{ inputs.aws-account-tag }} --profile organizations --region us-east-1)
         RESOURCES_COUNT=$(jq '.ResourceTagMappingList | length' <<< $RESOURCES)
         if [ $RESOURCES_COUNT == 0 ]; then
-            echo "No account found with tag ${AWS_ACCOUNT_TAG}"
+            echo "No account found with tag ${{ inputs.aws-account-tag }}"
             exit -1
         fi
         if (( $RESOURCES_COUNT > 1 )); then
-            echo "Multiple accounts tagged with tag ${AWS_ACCOUNT_TAG}. Either verify tag key or contact PST"
+            echo "Multiple accounts tagged with tag ${{ inputs.aws-account-tag }}. Either verify tag key or contact PST"
             exit -1
         fi
         ACCOUNT_ID=$(jq -r '.ResourceTagMappingList[0].ResourceARN' <<< $RESOURCES | sed 's/.*\///')
