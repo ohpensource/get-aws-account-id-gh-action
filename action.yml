@@ -47,6 +47,4 @@ runs:
         fi
         ACCOUNT_ID=$(jq -r '.ResourceTagMappingList[0].ResourceARN' <<< $RESOURCES | sed 's/.*\///')
 
-        echo "::set-output name=id::${ACCOUNT_ID}"
-
-
+        echo "id=${ACCOUNT_ID}" >> $GITHUB_OUTPUT
