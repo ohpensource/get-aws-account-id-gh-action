@@ -1,3 +1,9 @@
+# :confetti_ball: 0.1.0 (2023-06-23T14:34:21.787Z)
+- - -
+## :hammer: Features
+* HUBSA-2362 added source aws profile as parameter (#3)
+- - -
+- - -
 # :confetti_ball: 0.0.3 (2023-02-24T11:46:45.116Z)
 - - -
 ## :bug: Fixes
