@@ -6,9 +6,16 @@ Convenient way of retrieving aws account id
 This action retrieves aws account id based on account tag. The (required) inputs are:
 
 - _aws-account-tag_: AWS account tag used for retrieving id.
+- _aws-role-arn_: AWS role arn for accessing organizations.
+
+Depends on used AWS credentials we can use:
+
 - _aws-access-key_: AWS access key for accessing organizations.
 - _aws-secret-key_: AWS secret key for accessing organizations.
-- _aws-role-arn_: AWS role arn for accessing organizations.
+- 
+or
+
+- _aws-source-profile_: AWS source profile which will be used for assume role in: _aws-role-arn_
 
 Outputs:
 

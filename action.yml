@@ -7,13 +7,17 @@ inputs:
 
   aws-access-key:
     description: "AWS access key for accessing organizations"
-    required: true
+    required: false
   aws-secret-key:
     description: "AWS secret key for accessing organizations"
-    required: true
+    required: false
   aws-role-arn:
     description: "AWS role arn for accessing organizations"
     required: true
+
+  aws-source-profile:
+    description: "AWS source profile for accessing organizations"
+    required: false
 
 outputs:
   aws-account-id:
@@ -24,6 +28,7 @@ runs:
   using: "composite"
   steps:
     - name: Set up aws credentials
+      if: inputs.aws-source-profile == false
       shell: bash
       run: |
         aws configure set aws_access_key_id ${{ inputs.aws-access-key }} --profile organizations-base
@@ -31,6 +36,15 @@ runs:
 
         aws configure set role_arn ${{ inputs.aws-role-arn }} --profile organizations
         aws configure set source_profile organizations-base --profile organizations
+
+    - name: Set up aws credentials
+      if: inputs.aws-source-profile
+      shell: bash
+      run: |
+
+        aws configure set role_arn ${{ inputs.aws-role-arn }} --profile organizations
+        aws configure set source_profile ${{ inputs.aws-source-profile }} --profile organizations
+
     - name: Retrieve aws account id
       id: retrieve
       shell: bash
